@@ -76,7 +76,7 @@ function Sidebar({ onNavigate, activeRoute = 'dashboard', onLogout }) {
               ))}
             </nav>
             <button
-              className="btn btn-danger w-100 mt-auto"
+              className="btn position-fixed bottom-0 btn-danger py-2 px-4 mb-4 mt-auto"
               onClick={handleLogout}
               style={{ marginTop: 'auto' }}
             >
@@ -106,7 +106,7 @@ function Sidebar({ onNavigate, activeRoute = 'dashboard', onLogout }) {
           ))}
         </nav>
         <button
-          className="btn btn-danger w-100 mt-3"
+          className="btn position-fixed bottom-0 btn-danger py-2 px-5 mb-4 mt-3"
           onClick={handleLogout}
         >
           <i className="bi bi-box-arrow-right me-2"></i>Sign Out

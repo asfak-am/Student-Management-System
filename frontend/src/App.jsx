@@ -14,8 +14,36 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import GoogleSuccess from './pages/GoogleSuccess'
 
+// ─── Loading Screen ───────────────────────────────────────────────────────────
+function LoadingScreen() {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      width: '100vw',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #e8edff 0%, #f5f0ff 100%)',
+    }}>
+      <div style={{
+        width: '48px',
+        height: '48px',
+        border: '5px solid #e5e7eb',
+        borderTop: '5px solid #6366f1',
+        borderRadius: '50%',
+        animation: 'spin 0.8s linear infinite',
+      }} />
+      <style>{`
+        @keyframes spin {
+          0%   { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
 
-// ─── Protected Layout (your existing app) ────────────────────────────────────
+// ─── Protected Layout ─────────────────────────────────────────────────────────
 function AppLayout() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const { logout } = useAuth();
@@ -37,13 +65,9 @@ function AppLayout() {
 
   const currentPageData = pages[currentPage];
 
-  const handleNavClick = (route) => {
-    setCurrentPage(route);
-  };
-
   return (
     <>
-      <Sidebar onNavigate={handleNavClick} activeRoute={currentPage} onLogout={logout} />
+      <Sidebar onNavigate={setCurrentPage} activeRoute={currentPage} onLogout={logout} />
       <div className="main-content p-3">
         <TopBar
           title={currentPageData.title}
@@ -59,14 +83,14 @@ function AppLayout() {
 // ─── Protected Route ──────────────────────────────────────────────────────────
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingScreen />;
   return user ? children : <Navigate to="/login" replace />;
 }
 
-// ─── Public Route (redirect to dashboard if already logged in) ────────────────
+// ─── Public Route ─────────────────────────────────────────────────────────────
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingScreen />;
   return !user ? children : <Navigate to="/dashboard" replace />;
 }
 
@@ -76,19 +100,18 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* Redirect root to dashboard if logged in */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          
+
           {/* Public routes */}
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/login"           element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register"        element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
-          <Route path="/reset-password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+          <Route path="/reset-password"  element={<PublicRoute><ResetPassword /></PublicRoute>} />
           <Route path="/auth/google/success" element={<GoogleSuccess />} />
-          
+
           {/* Protected routes */}
           <Route path="/dashboard" element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
-          <Route path="/*" element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
+          <Route path="/*"         element={<ProtectedRoute><AppLayout /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
